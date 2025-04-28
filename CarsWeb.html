@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Showcase</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #2d3748;
+      position: relative;
+    }
+    
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    header p {
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #4a5568;
+    }
+    
+    .search-bar {
+      margin: 2rem auto;
+      max-width: 600px;
+      display: flex;
+      overflow: hidden;
+      border-radius: 50px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    
+    .search-bar button {
+      background: #3182ce;
+      color: white;
+      border: none;
+      padding: 0 1.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .search-bar button:hover {
+      background: #2c5282;
+    }
+    
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      background: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      background: #3182ce;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .car-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    
+    .car-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    .car-image {
+      height: 200px;
+      background-position: center;
+      background-size: cover;
+      position: relative;
+    }
+    
+    .car-type {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    
+    .car-info {
+      padding: 1.5rem;
+    }
+    
+    .car-name {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #2d3748;
+    }
+    
+    .car-specs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+    
+    .car-desc {
+      color: #718096;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    .car-price {
+      font-weight: bold;
+      color: #3182ce;
+      font-size: 1.25rem;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      overflow: auto;
+      padding: 2rem;
+    }
+    
+    .modal-content {
+      background: white;
+      margin: auto;
+      max-width: 800px;
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      background: #3182ce;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .modal-body {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    .modal-image {
+      height: 300px;
+      background-position: center;
+      background-size: cover;
+      border-radius: 8px;
+    }
+    
+    .modal-details h3 {
+      margin-bottom: 1rem;
+      color: #2d3748;
+    }
+    
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .spec-label {
+      color: #718096;
+    }
+    
+    .spec-value {
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      background: #f7fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #3182ce;
+    }
+    
+    .action-btn {
+      background: #3182ce;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    
+    .action-btn:hover {
+      background: #2c5282;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .cars-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+      
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Automotive Showcase</h1>
+      <p>Explore our collection of premium vehicles and discover their features, specifications, and performance capabilities.</p>
+    </header>
+    
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search for cars...">
+      <button id="search-btn">Search</button>
+    </div>
+    
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="sedan">Sedan</button>
+      <button class="filter-btn" data-filter="suv">SUV</button>
+      <button class="filter-btn" data-filter="sports">Sports</button>
+      <button class="filter-btn" data-filter="electric">Electric</button>
+      <button class="filter-btn" data-filter="luxury">Luxury</button>
+    </div>
+    
+    <div class="cars-grid" id="cars-container">
+      
+    </div>
+  </div>
+  
+  <div class="modal" id="car-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Car Details</h2>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-image" id="modal-image"></div>
+        <div class="modal-details">
+          <h3>Specifications</h3>
+          <div class="spec-item">
+            <span class="spec-label">Engine</span>
+            <span class="spec-value" id="modal-engine">V6, 3.5L</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Horsepower</span>
+            <span class="spec-value" id="modal-horsepower">300 hp</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">0-60 mph</span>
+            <span class="spec-value" id="modal-acceleration">5.2 seconds</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Transmission</span>
+            <span class="spec-value" id="modal-transmission">8-speed automatic</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Fuel Economy</span>
+            <span class="spec-value" id="modal-mpg">25 mpg city / 32 mpg highway</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Drivetrain</span>
+            <span class="spec-value" id="modal-drivetrain">AWD</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Seating</span>
+            <span class="spec-value" id="modal-seating">5 passengers</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Year</span>
+            <span class="spec-value" id="modal-year">2024</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Top Features</span>
+            <span class="spec-value" id="modal-features">Leather seats, Panoramic roof, Advanced driver assistance</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-price" id="modal-price">$45,000</div>
+        <button class="action-btn">Learn More</button>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025 Automotive Showcase. All rights reserved.</p>
+  </footer>
+
+  <script>
+    
+    const cars = [
+      {
+        id: 1,
+        name: "Luxe Sedan S-Class",
+        type: "sedan",
+        image: "/api/placeholder/500/300",
+        price: "$55,000",
+        year: 2024,
+        engine: "V6, 3.0L Twin-Turbo",
+        horsepower: "362 hp",
+        acceleration: "4.9 seconds",
+        transmission: "9-speed automatic",
+        mpg: "22 mpg city / 31 mpg highway",
+        drivetrain: "RWD",
+        seating: "5 passengers",
+        features: "Heated leather seats, MBUX infotainment, Driver assistance package",
+        description: "A premium sedan with exceptional comfort and cutting-edge technology."
+      },
+      {
+        id: 2,
+        name: "Adventure X7",
+        type: "suv",
+        image: "/api/placeholder/500/300",
+        price: "$62,500",
+        year: 2024,
+        engine: "V8, 4.4L",
+        horsepower: "456 hp",
+        acceleration: "5.3 seconds",
+        transmission: "8-speed automatic",
+        mpg: "18 mpg city / 24 mpg highway",
+        drivetrain: "AWD",
+        seating: "7 passengers",
+        features: "Three-row seating, Panoramic sunroof, Advanced off-road capabilities",
+        description: "A versatile SUV for families and adventure enthusiasts alike."
+      },
+      {
+        id: 3,
+        name: "Velocity GT",
+        type: "sports",
+        image: "/api/placeholder/500/300",
+        price: "$89,000",
+        year: 2024,
+        engine: "V8, 5.0L",
+        horsepower: "580 hp",
+        acceleration: "3.2 seconds",
+        transmission: "8-speed dual-clutch",
+        mpg: "16 mpg city / 24 mpg highway",
+        drivetrain: "RWD",
+        seating: "2 passengers",
+        features: "Carbon fiber components, Track mode, Brembo brakes",
+        description: "A high-performance sports car designed for speed enthusiasts."
+      },
+      {
+        id: 4,
+        name: "Eco Prime",
+        type: "electric",
+        image: "/api/placeholder/500/300",
+        price: "$48,000",
+        year: 2024,
+        engine: "Dual electric motors",
+        horsepower: "402 hp",
+        acceleration: "4.2 seconds",
+        transmission: "Single-speed automatic",
+        mpg: "128 MPGe",
+        drivetrain: "AWD",
+        seating: "5 passengers",
+        features: "350-mile range, Fast charging capability, Advanced autopilot",
+        description: "A zero-emission vehicle with impressive range and performance."
+      },
+      {
+        id: 5,
+        name: "Royal Phantom",
+        type: "luxury",
+        image: "/api/placeholder/500/300",
+        price: "$110,000",
+        year: 2024,
+        engine: "V12, 6.75L",
+        horsepower: "563 hp",
+        acceleration: "5.1 seconds",
+        transmission: "8-speed automatic",
+        mpg: "12 mpg city / 20 mpg highway",
+        drivetrain: "RWD",
+        seating: "5 passengers",
+        features: "Handcrafted interior, Starlight headliner, Champagne cooler",
+        description: "The ultimate luxury sedan with unparalleled craftsmanship and comfort."
+      },
+      {
+        id: 6,
+        name: "Urban Compact",
+        type: "sedan",
+        image: "/api/placeholder/500/300",
+        price: "$32,000",
+        year: 2024,
+        engine: "Inline-4, 2.0L Turbo",
+        horsepower: "255 hp",
+        acceleration: "5.6 seconds",
+        transmission: "7-speed DCT",
+        mpg: "26 mpg city / 36 mpg highway",
+        drivetrain: "FWD",
+        seating: "5 passengers",
+        features: "Apple CarPlay, Android Auto, Wireless charging",
+        description: "A stylish compact sedan perfect for city driving."
+      },
+      {
+        id: 7,
+        name: "Terra Crossover",
+        type: "suv",
+        image: "/api/placeholder/500/300",
+        price: "$42,000",
+        year: 2024,
+        engine: "V6, 3.5L",
+        horsepower: "295 hp",
+        acceleration: "6.7 seconds",
+        transmission: "CVT",
+        mpg: "21 mpg city / 27 mpg highway",
+        drivetrain: "AWD",
+        seating: "5 passengers",
+        features: "Adaptive cruise control, Lane keeping assist, 360° camera",
+        description: "A reliable crossover SUV with excellent safety features."
+      },
+      {
+        id: 8,
+        name: "Lightning EV",
+        type: "electric",
+        image: "/api/placeholder/500/300",
+        price: "$55,000",
+        year: 2024,
+        engine: "Single electric motor",
+        horsepower: "342 hp",
+        acceleration: "4.8 seconds",
+        transmission: "Single-speed automatic",
+        mpg: "132 MPGe",
+        drivetrain: "RWD",
+        seating: "5 passengers",
+        features: "300-mile range, V2L capability, 15-inch touchscreen",
+        description: "An affordable electric vehicle with impressive technology."
+      }
+    ];
+    
+    const carsContainer = document.getElementById('cars-container');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const modal = document.getElementById('car-modal');
+    const closeBtn = document.querySelector('.close-btn');
+    
+    
+    function renderCars(carsToRender) {
+      carsContainer.innerHTML = '';
+      
+      if (carsToRender.length === 0) {
+        carsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #718096;">No cars found matching your criteria.</p>';
+        return;
+      }
+      
+      carsToRender.forEach(car => {
+        const carCard = document.createElement('div');
+        carCard.className = 'car-card';
+        carCard.dataset.id = car.id;
+        
+        carCard.innerHTML = `
+          <div class="car-image" style="background-image: url('${car.image}')">
+            <div class="car-type">${car.type}</div>
+          </div>
+          <div class="car-info">
+            <h3 class="car-name">${car.name}</h3>
+            <div class="car-specs">
+              <span>${car.year}</span>
+              <span>•</span>
+              <span>${car.engine}</span>
+            </div>
+            <p class="car-desc">${car.description}</p>
+            <div class="car-price">${car.price}</div>
+          </div>
+        `;
+        
+        carsContainer.appendChild(carCard);
+      });
+    }
+    
+    function filterCars(type) {
+      if (type === 'all') {
+        return cars;
+      } else {
+        return cars.filter(car => car.type === type);
+      }
+    }
+    
+    function searchCars(query) {
+      return cars.filter(car => 
+        car.name.toLowerCase().includes(query) || 
+        car.description.toLowerCase().includes(query) ||
+        car.type.toLowerCase().includes(query)
+      );
+    }
+    
+    function showCarDetails(carId) {
+      const car = cars.find(car => car.id === parseInt(carId));
+      
+      if (!car) return;
+      
+      
+      document.getElementById('modal-title').textContent = car.name;
+      document.getElementById('modal-image').style.backgroundImage = `url('${car.image}')`;
+      document.getElementById('modal-engine').textContent = car.engine;
+      document.getElementById('modal-horsepower').textContent = car.horsepower;
+      document.getElementById('modal-acceleration').textContent = car.acceleration;
+      document.getElementById('modal-transmission').textContent = car.transmission;
+      document.getElementById('modal-mpg').textContent = car.mpg;
+      document.getElementById('modal-drivetrain').textContent = car.drivetrain;
+      document.getElementById('modal-seating').textContent = car.seating;
+      document.getElementById('modal-year').textContent = car.year;
+      document.getElementById('modal-features').textContent = car.features;
+      document.getElementById('modal-price').textContent = car.price;
+      
+      
+      modal.style.display = 'flex';
+    }
+    
+    
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        
+        const filteredCars = filterCars(btn.dataset.filter);
+        renderCars(filteredCars);
+      });
+    });
+    
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      if (query) {
+        const searchedCars = searchCars(query);
+        renderCars(searchedCars);
+        
+        
+        filterBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-filter="all"]').classList.add('active');
+      }
+    });
+    
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchBtn.click();
+      }
+    });
+    
+    
+    carsContainer.addEventListener('click', (e) => {
+      const card = e.target.closest('.car-card');
+      if (card) {
+        showCarDetails(card.dataset.id);
+      }
+    });
+    
+    
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    
+   
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+    
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCars(cars);
+    });
+  </script>
+</body>
+</html>
